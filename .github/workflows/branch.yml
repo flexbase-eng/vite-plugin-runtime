@@ -1,0 +1,42 @@
+name: Branch
+on:
+  pull_request:
+
+jobs:
+  build:
+    name: Build
+    uses: flexbase-eng/.github/.github/workflows/build.typescript.yml@main
+    secrets: inherit
+    with:
+      node_version: '18'
+
+  unit-test:
+    name: Run unit tests
+    needs: build
+    uses: flexbase-eng/.github/.github/workflows/test.unit.typescript.yml@main
+    secrets: inherit
+
+  coverage:
+    name: Compute test coverage
+    needs: [unit-test]
+    uses: flexbase-eng/.github/.github/workflows/coverage.sonarcloud.yml@main
+    secrets: inherit
+
+  package:
+    name: Package artifacts
+    needs: build
+    uses: flexbase-eng/.github/.github/workflows/package.typescript.yml@main
+    secrets: inherit
+    with:
+      version_command: ''
+      packr_command: 'packr'
+      build_artifact_folder: 'output'
+
+  deploy:
+    needs: [package, coverage]
+    uses: flexbase-eng/.github/.github/workflows/deploy.npm.yml@main
+    secrets: inherit
+    with:
+      node_version: '18'
+      tag: beta
+      build_artifact_folder: ''
