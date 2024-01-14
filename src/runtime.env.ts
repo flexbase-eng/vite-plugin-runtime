@@ -1,9 +1,10 @@
-import * as Path from 'path';
-import { Plugin, ResolvedConfig } from 'vite';
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
-import * as prettier from 'prettier';
-import { RuntimeEnvConfig } from './runtime.env.config.js';
+import Path from 'path';
+import type { Plugin, ResolvedConfig } from 'vite';
+import dotenv from 'dotenv';
+import fs from 'fs';
+import prettier from 'prettier';
+import type { RuntimeEnvConfig } from './runtime.env.config.js';
+import { getGeneratedTypesPath, getName, getType, isViteEnv } from './helpers.js';
 
 /**
  * Runtime environment plugin for vite
@@ -14,74 +15,8 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
   let runtimeEnvConfig: RuntimeEnvConfig;
   let vite_env_prefix: string[];
 
-  const viteEnvs = ['MODE', 'BASE_URL', 'PROD', 'DEV', 'SSR'];
-
   const importMetaEnvRegex = /(import\.meta\.env)(.+)/g;
   const regexIdentifierName = /(?:[$_\p{ID_Start}])(?:[$\u200C\u200D\p{ID_Continue}])*/u;
-
-  const isViteEnv = (name: string): boolean => {
-    if (viteEnvs.includes(name)) {
-      return true;
-    }
-
-    return vite_env_prefix.some(prefix => name.startsWith(prefix));
-  };
-
-  const getName = (config: RuntimeEnvConfig): string => {
-    if (!config.name) {
-      return 'env';
-    }
-    if (typeof config.name === 'string') {
-      return config.name;
-    }
-    return config.name();
-  };
-
-  const getGeneratedTypesPath = (config: RuntimeEnvConfig): string | undefined => {
-    if (!config.generatedTypesPath) {
-      return undefined;
-    }
-    if (typeof config.generatedTypesPath === 'string') {
-      return config.generatedTypesPath;
-    }
-
-    return config.generatedTypesPath();
-  };
-
-  const isNumber = (value: unknown): value is number => {
-    if (typeof value === 'number') {
-      return true;
-    }
-
-    if (typeof value !== 'string') return false;
-
-    return !Number.isNaN(Number(value)) && !Number.isNaN(Number.parseFloat(value));
-  };
-
-  const isBoolean = (value: unknown): value is boolean => {
-    if (typeof value === 'boolean') {
-      return true;
-    }
-
-    if (typeof value !== 'string') {
-      return false;
-    }
-
-    if (['true', '1', 'yes', 'on', 'false', '0', 'no', 'off'].includes(value.trim().toLowerCase())) return true;
-
-    return false;
-  };
-
-  const getType = (value: unknown): string => {
-    if (isNumber(value)) {
-      return 'number';
-    }
-    if (isBoolean(value)) {
-      return 'boolean';
-    }
-
-    return typeof value;
-  };
 
   return {
     name: 'vite-plugin-runtime',
@@ -109,7 +44,7 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
 
       const keys = Object.keys(envObj);
       keys.forEach(key => {
-        if (isViteEnv(key)) {
+        if (isViteEnv(key, vite_env_prefix)) {
           delete envObj[key];
         }
       });
@@ -151,7 +86,7 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
 
         const name = identifierMatch[0];
 
-        if (isViteEnv(name)) {
+        if (isViteEnv(name, vite_env_prefix)) {
           continue;
         }
 

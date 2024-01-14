@@ -6,11 +6,11 @@
 ## Installation
 
 ```
-npm install --save-dev @vite-plugin-runtime
+npm install --save-dev vite-plugin-runtime
 ```
 
 or
 
 ```
-yarn add @vite-plugin-runtime --dev
+yarn add vite-plugin-runtime --dev
 ```

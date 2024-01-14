@@ -1,4 +1,4 @@
-import { RuntimeEnvConfig } from './runtime.env.config.js';
+import type { RuntimeEnvConfig } from './runtime.env.config.js';
 export { runtimeEnv } from './runtime.env.js';
 
 declare module 'vite' {

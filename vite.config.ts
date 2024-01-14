@@ -5,7 +5,7 @@ import path from 'path';
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json' assert { type: 'json' };
 import dts from 'vite-plugin-dts';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { builtinModules } from 'node:module';
 
 const resolvePath = (str: string) => path.resolve(__dirname, str);
 
@@ -21,7 +21,13 @@ export default defineConfig({
     },
     rollupOptions: {
       plugins: [typescript()],
-      external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
+      external: [
+        'vite',
+        ...builtinModules,
+        ...builtinModules.map(m => `node:${m}`),
+        ...Object.keys(pkg.dependencies || {}),
+        ...Object.keys(pkg.peerDependencies || {}),
+      ],
     },
   },
   test: {
@@ -32,5 +38,5 @@ export default defineConfig({
       include: ['src/'],
     },
   },
-  plugins: [dts({ insertTypesEntry: true }), nodePolyfills()],
+  plugins: [dts({ insertTypesEntry: true })],
 });
