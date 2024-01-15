@@ -14,7 +14,6 @@ export interface RuntimeEnvConfig {
   generateTypes?: boolean;
   /**
    * The path to generate typescript types. Only takes affect if @see {@link generateTypes} is `true`
-   * @see {@link UserConfig.root}
    * @default process.cwd()
    */
   generatedTypesPath?: (() => string) | string;
