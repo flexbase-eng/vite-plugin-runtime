@@ -19,7 +19,7 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
   const regexIdentifierName = /(?:[$_\p{ID_Start}])(?:[$\u200C\u200D\p{ID_Continue}])*/u;
 
   return {
-    name: 'vite-plugin-runtime',
+    name: 'vite-plugin-runtime-env',
     configResolved(config) {
       vite_config = config;
 

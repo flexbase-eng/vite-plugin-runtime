@@ -3,7 +3,7 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=flexbase-eng_vite-plugin-runtime&metric=coverage)](https://sonarcloud.io/summary/new_code?id=flexbase-eng_vite-plugin-runtime)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=flexbase-eng_vite-plugin-runtime&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=flexbase-eng_vite-plugin-runtime) [![License](https://img.shields.io/github/license/flexbase-eng/vite-plugin-runtime)](LICENSE)
 
-Inject runtime environment variables based on the build environment.
+Inject runtime environment variables and html based on the [vite mode](https://vitejs.dev/guide/env-and-mode.html).
 
 ## Installation
 
@@ -17,7 +17,9 @@ or
 yarn add vite-plugin-runtime --dev
 ```
 
-## Summary
+## runtimeEnv
+
+### Summary
 
 This plugin allows build toolchains to inject variables at compile time instead of relying on multiple `.env.*` environment dotenv files.
 This is especially useful for values that need to be managed externally from source code.
@@ -28,11 +30,15 @@ This plugin replaces usage of `import.meta.env.VITE_*` with `import.meta.env.*`.
 | ------------------------------ | ------------------------- |
 | `import.meta.env.VITE_APP_KEY` | `import.meta.env.APP_KEY` |
 
+---
+
 .env file
 
 | vite                      | vite-plugin-runtime  |
 | ------------------------- | -------------------- |
 | `VITE_APP_KEY=some value` | `APP_KEY=some value` |
+
+---
 
 During the build this plugin will convert all occurences of `import.meta.env.*` to `window.env.*`
 
@@ -40,9 +46,9 @@ During the build this plugin will convert all occurences of `import.meta.env.*` 
 | ------------------------- | -------------------- |
 | `import.meta.env.APP_KEY` | `window.env.APP_KEY` |
 
-## Usage
+### Usage
 
-### vite.config
+#### vite.config
 
 The plugin options can be injected in the constructor or as a separate object on the vite config object.
 
@@ -56,9 +62,9 @@ export default defineConfig({
   runtimeEnv: {}, // optional configuration object
 ```
 
-## Configuration
+### Configuration
 
-### name
+#### name
 
 This is the name of the object attached to the `window` instance. Default is `env`.
 
@@ -74,7 +80,7 @@ runtimeEnv({
 
 outputs `window.customName.*`
 
-### generateTypes
+#### generateTypes
 
 Specificies whether to generate typescript types for `import.meta.env`. Default is `false`.
 
@@ -88,7 +94,7 @@ runtimeEnv({
 }),
 ```
 
-### generatedTypesPath
+#### generatedTypesPath
 
 The path to generate typescript types. Only takes affect if [generateTypes](#generatetypes) is `true`. Default is `process.cwd()`
 
@@ -114,7 +120,7 @@ interface ImportMeta {
 }
 ```
 
-### injectHtml
+#### injectHtml
 
 Specifies whether to inject an env loading script into `index.html`. Defaults to `true`.
 
@@ -145,4 +151,56 @@ The generated script will resemble:
 export default {
   APP_KEY: 'some value',
 };
+```
+
+## runtimeHtml
+
+### Summary
+
+This plugin allows an easy way to inject html into `index.html` at compile time based on the [vite mode](https://vitejs.dev/guide/env-and-mode.html).
+This is useful for scripts like google tag manager that should only be loaded for certain environments like production.
+
+### Usage
+
+#### vite.config
+
+The plugin options can be injected in the constructor or as a separate object on the vite config object.
+
+```ts
+import { runtimeHtml } from 'vite-plugin-runtime';
+
+export default defineConfig({
+  plugins: [
+    runtimeHtml(),
+  ],
+  runtimeHtml: {}, // optional configuration object
+```
+
+### Configuration
+
+see [HtmlTagDescriptor](https://vitejs.dev/guide/api-plugin.html#transformindexhtml)
+
+```ts
+mode: HtmlTagDescriptor[]
+```
+
+```ts
+runtimeHtml({
+  production: [
+      {
+        tag: 'script',
+        attrs: {
+          type: 'text/javascript',
+          src: '/some_file.js',
+        },
+        injectTo: 'head',
+      },
+    ],
+  staging: [
+    {
+      tag: 'title',
+      children: 'Staging',
+    }
+  ]
+}),
 ```

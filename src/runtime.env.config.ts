@@ -1,7 +1,7 @@
 /**
  * Represents the configuration object for `vite-plugin-runtime-env`
  */
-export interface RuntimeEnvConfig {
+export type RuntimeEnvConfig = {
   /**
    * This is the name of the object attached to the `window` instance
    * @default env
@@ -22,4 +22,4 @@ export interface RuntimeEnvConfig {
    * @default true
    */
   injectHtml?: boolean;
-}
+};
