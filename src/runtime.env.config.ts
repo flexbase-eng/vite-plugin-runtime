@@ -22,4 +22,9 @@ export type RuntimeEnvConfig = {
    * @default true
    */
   injectHtml?: boolean;
+  /**
+   * Specifies whether to create an envsubst template file at build time
+   * @default false
+   */
+  envsubstTemplate?: boolean;
 };
