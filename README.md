@@ -153,6 +153,28 @@ export default {
 };
 ```
 
+#### envsubstTemplate
+
+Specifies whether to create an envsubst template file at build time. Defaults to `false`.
+
+```ts
+envsubstTemplate?: boolean
+```
+
+```ts
+runtimeEnv({
+  envsubstTemplate: true,
+}),
+```
+
+When `true` the plugin will create the following template file:
+
+```js
+export default {
+  APP_KEY: $APP_KEY,
+};
+```
+
 ## runtimeHtml
 
 ### Summary

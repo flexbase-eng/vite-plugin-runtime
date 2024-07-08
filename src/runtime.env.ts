@@ -129,10 +129,14 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
       const globalName = getName(runtimeEnvConfig);
 
       const jsonObj: Record<string, unknown> = {};
+      const envsubstTemplateObj: Record<string, string> = {};
 
       Object.entries(envObj).forEach(entry => {
         const entryType = getType(entry[1]);
         jsonObj[entry[0]] = entryType === 'number' ? Number(entry[1]) : entryType === 'boolean' ? Boolean(entry[1]) : entry[1];
+        if (runtimeEnvConfig.envsubstTemplate === true) {
+          envsubstTemplateObj[entry[0]] = `$${entry[0]}`;
+        }
       });
 
       const output = `export default ${JSON.stringify(jsonObj)} ;`;
@@ -142,6 +146,16 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
         fileName: `${globalName}.js`,
         source: output,
       });
+
+      if (runtimeEnvConfig.envsubstTemplate === true) {
+        const envsubstTemplateOutput = `export default ${JSON.stringify(envsubstTemplateObj)} ;`;
+
+        this.emitFile({
+          type: 'asset',
+          fileName: `${globalName}.template.js`,
+          source: envsubstTemplateOutput,
+        });
+      }
     },
   };
 };
