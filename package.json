@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-runtime",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Vite plugin that enables configuring runtime environment variables when building",
   "author": {
     "name": "Flexbase Technologies",
