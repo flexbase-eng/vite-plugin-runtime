@@ -33,7 +33,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx,.json --max-warnings=0",
+    "lint": "eslint src/** --max-warnings=0",
     "lint:fix": "yarn lint --fix",
     "dev": "vite",
     "build": "tsc && vite build",
@@ -79,72 +79,11 @@
     "moq.ts": "^10.0.8",
     "semantic-release": "^24.0.0",
     "typescript": "^5.5.3",
+    "typescript-eslint": "^7.15.0",
     "vite": "5.3.3",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "2.0.0"
   },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es2022": true,
-      "node": true
-    },
-    "parserOptions": {
-      "ecmaVersion": "latest"
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:import/typescript",
-      "eslint-config-prettier"
-    ],
-    "overrides": [],
-    "plugins": [
-      "filenames-simple",
-      "check-file",
-      "require-extensions",
-      "import"
-    ],
-    "settings": {
-      "import/resolver": {
-        "node": {
-          "paths": [
-            "./src/**/*"
-          ],
-          "extensions": [
-            ".js",
-            ".ts",
-            ".d.ts",
-            ".tsx"
-          ]
-        }
-      }
-    },
-    "rules": {
-      "check-file/folder-naming-convention": [
-        "error",
-        {
-          "src/**/": "KEBAB_CASE",
-          "tests/**/": "KEBAB_CASE"
-        }
-      ],
-      "filenames-simple/naming-convention": [
-        "error",
-        {
-          "rule": "kebab-case"
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "node_modules",
-    "dist",
-    ".github",
-    ".vscode",
-    "build",
-    "scripts",
-    "tests"
-  ],
   "prettier": {
     "semi": true,
     "singleQuote": true,

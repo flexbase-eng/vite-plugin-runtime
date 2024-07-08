@@ -6329,6 +6329,15 @@ typed-array-length@^1.0.4:
     for-each "^0.3.3"
     is-typed-array "^1.1.9"
 
+typescript-eslint@^7.15.0:
+  version "7.15.0"
+  resolved "https://registry.yarnpkg.com/typescript-eslint/-/typescript-eslint-7.15.0.tgz#44caca31461cc8afa829c4e5ab11aa9e0f7e175d"
+  integrity sha512-Ta40FhMXBCwHura4X4fncaCVkVcnJ9jnOq5+Lp4lN8F4DzHZtOwZdRvVBiNUGznUDHPwdGnrnwxmUOU2fFQqFA==
+  dependencies:
+    "@typescript-eslint/eslint-plugin" "7.15.0"
+    "@typescript-eslint/parser" "7.15.0"
+    "@typescript-eslint/utils" "7.15.0"
+
 typescript@5.4.2:
   version "5.4.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.2.tgz#0ae9cebcfae970718474fe0da2c090cad6577372"
