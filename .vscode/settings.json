@@ -1,0 +1,6 @@
+{
+  "sonarlint.connectedMode.project": {
+    "connectionId": "Flex",
+    "projectKey": "flexbase-eng_vite-plugin-runtime"
+  }
+}
