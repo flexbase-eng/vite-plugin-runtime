@@ -15,7 +15,6 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
   let runtimeEnvConfig: RuntimeEnvConfig;
   let vite_env_prefix: string[];
 
-  const importMetaEnvRegex = /(import\.meta\.env)(.+)/g;
   const regexIdentifierName = /(?:[$_\p{ID_Start}])(?:[$\u200C\u200D\p{ID_Continue}])*/u;
 
   return {
@@ -77,7 +76,8 @@ export const runtimeEnv = (options: RuntimeEnvConfig = { injectHtml: true }): Pl
       const globalObject = 'window';
       const globalName = getName(runtimeEnvConfig);
 
-      for (let match = importMetaEnvRegex.exec(code); match !== null; match = importMetaEnvRegex.exec(code)) {
+      const importMetaRegex = new RegExp(`(import\\.meta\\.${globalName})(.+)`, 'g');
+      for (let match = importMetaRegex.exec(code); match !== null; match = importMetaRegex.exec(code)) {
         const identifierMatch = regexIdentifierName.exec(match[2]);
 
         if (identifierMatch === null) {
