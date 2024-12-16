@@ -1,0 +1,52 @@
+name: Compile
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        required: true
+        type: string
+      build_cache_key:
+        required: true
+        type: string
+      dependencies_cache_key:
+        required: true
+        type: string
+
+jobs:
+  Compile:
+    runs-on: ubuntu-latest
+    env:
+      CLI_BUILD: yarn build
+      CLI_LINT: yarn lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: yarn
+
+      - name: Retrieve dependencies cache
+        id: dependencies-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: ${{ inputs.dependencies_cache_key }}
+          fail-on-cache-miss: true
+
+      - name: Build
+        run: ${{ env.CLI_BUILD }}
+
+      - name: Lint
+        run: ${{ env.CLI_LINT }}
+
+      - name: Upload build cache
+        uses: actions/cache@v4
+        with:
+          path: ./*
+          key: ${{ inputs.build_cache_key }}

@@ -1,0 +1,12 @@
+name: Pull Request
+on:
+  pull_request:
+
+jobs:
+  dev:
+    uses: ./.github/workflows/build.test.package.deploy.yml
+    secrets: inherit
+    with:
+      node_version: '20'
+      build_cache_key: build-cache-${{ github.sha }}
+      is_beta: true

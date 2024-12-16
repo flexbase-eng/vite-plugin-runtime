@@ -1,0 +1,63 @@
+name: Npm Deploy
+on:
+  workflow_call:
+    inputs:
+      build_artifact_folder:
+        required: true
+        type: string
+      build_artifact_name:
+        required: true
+        type: string
+      is_beta:
+        required: true
+        type: boolean
+      package_manager:
+        required: false
+        type: string
+        default: yarn
+      package_visibility:
+        required: false
+        type: string
+        default: public
+      node_version:
+        required: true
+        type: string
+      registry-url:
+        required: false
+        type: string
+        default: 'https://registry.npmjs.org'
+        description: The package registry to use. Defaults to 'https://registry.npmjs.org'
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+  CLI_PUBLISH: yarn publish --access ${{ inputs.package_visibility }} --tag ${{ inputs.is_beta && 'beta' || 'latest' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.build_artifact_name }}
+          path: ${{ inputs.build_artifact_folder }}
+
+      - name: Setup Node ${{ inputs.node_version }} with cache
+        uses: actions/setup-node@v4
+        with:
+          registry-url: ${{ inputs.registry-url }}
+          always-auth: true
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+        # reference: https://stackoverflow.com/questions/54310050/how-to-version-build-artifacts-using-github-actions
+      - name: beta - version value from package.json
+        if: inputs.is_beta
+        run: |
+          npm i -g json
+          json -I -f package.json -e "this.version=\"$(json -f package.json | json version)-beta.${{ github.run_number }}\""
+
+      - name: Publish
+        run: ${{ env.CLI_PUBLISH }}
