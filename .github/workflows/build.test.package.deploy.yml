@@ -61,6 +61,7 @@ jobs:
     needs: [package, coverage]
     uses: ./.github/workflows/deploy.yml
     with:
+      build_cache_key: ${{ inputs.build_cache_key }}
       build_artifact_name: ${{ needs.package.outputs.build_artifact_name }}
       build_artifact_folder: ${{ needs.package.outputs.build_artifact_folder }}
       node_version: ${{ inputs.node_version }}
