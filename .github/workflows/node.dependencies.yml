@@ -5,16 +5,17 @@ on:
       node_version:
         required: true
         type: string
+      node_env:
+        required: true
+        type: string
+
     outputs:
-      dev_cache_key:
+      cache_key:
         description: Node development dependencies cache key
-        value: ${{ jobs.dev.outputs.cache_key}}
-      prod_cache_key:
-        description: Node production dependencies cache key
-        value: ${{ jobs.prod.outputs.cache_key}}
+        value: ${{ jobs.deps.outputs.cache_key}}
 
 jobs:
-  dev:
+  deps:
     name: Node Development Dependencies
     runs-on: ubuntu-latest
     env:
@@ -35,7 +36,7 @@ jobs:
       - name: Compute cache key
         id: compute-cache-key
         env:
-          CACHE_KEY: node-modules-${{ runner.os }}-dev-${{ hashFiles(env.LOCK_FILE) }}
+          CACHE_KEY: node-modules-${{ runner.os }}-${{ inputs.node_env }}-${{ hashFiles(env.LOCK_FILE) }}
         run: |
           echo "cache_key=$CACHE_KEY" >> $GITHUB_OUTPUT
           echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
@@ -58,61 +59,7 @@ jobs:
       - name: Install dependencies
         if: steps.dependencies-cache.outputs.cache-hit != 'true'
         env:
-          NODE_ENV: development
-        run: ${{ env.CLI_INSTALL }}
-
-      - name: Update dependencies cache
-        if: steps.dependencies-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: ./node_modules
-          key: ${{ env.CACHE_KEY }}
-
-  prod:
-    name: Node Production Dependencies
-    runs-on: ubuntu-latest
-    env:
-      CLI_INSTALL: yarn install --non-interactive --frozen-lockfile --silent
-      LOCK_FILE: yarn.lock
-      CACHE_KEY:
-
-    outputs:
-      cache_key: ${{ steps.compute-cache-key.outputs.cache_key }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Compute cache key
-        id: compute-cache-key
-        env:
-          CACHE_KEY: node-modules-${{ runner.os }}-prod-${{ hashFiles(env.LOCK_FILE) }}
-        run: |
-          echo "cache_key=$CACHE_KEY" >> $GITHUB_OUTPUT
-          echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
-
-      - name: Lookup dependencies cache
-        id: dependencies-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./node_modules
-          key: ${{ env.CACHE_KEY }}
-          lookup-only: true
-
-      - name: Setup Node ${{ inputs.node_version }}
-        if: steps.dependencies-cache.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node_version }}
-          cache: yarn
-
-      - name: Install dependencies
-        if: steps.dependencies-cache.outputs.cache-hit != 'true'
-        env:
-          NODE_ENV: production
+          NODE_ENV: ${{ inputs.node_env }}
         run: ${{ env.CLI_INSTALL }}
 
       - name: Update dependencies cache
