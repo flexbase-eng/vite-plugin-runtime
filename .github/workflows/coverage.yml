@@ -1,0 +1,67 @@
+name: Coverage
+on:
+  workflow_call:
+    inputs:
+      project_key:
+        required: false
+        type: string
+        default: 'flexbase-eng_${{ github.event.repository.name }}'
+      coverage_artifact_folder:
+        required: false
+        type: string
+        default: 'coverage'
+      coverage_artifact_name:
+        required: false
+        type: string
+        default: 'code-coverage-report'
+      js_report_path:
+        required: false
+        type: string
+        default: 'coverage/lcov.info'
+      src_path:
+        required: false
+        type: string
+        default: './src/'
+      test_path:
+        required: false
+        type: string
+        default: './tests/'
+      exclusions:
+        required: false
+        type: string
+        default: '**/generated/**'
+
+env:
+  SONAR_ORG: flexbase
+  SONAR_PROJECT_KEY: ${{ inputs.project_key }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  sonarcloud:
+    name: Sonarcloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Retrieve coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.coverage_artifact_name }}
+          path: ${{ inputs.coverage_artifact_folder }}
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.organization=${{ env.SONAR_ORG }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.javascript.lcov.reportPaths=${{ inputs.js_report_path }}
+            -Dsonar.sources=${{inputs.src_path}}
+            -Dsonar.tests=${{inputs.test_path}}
+            -Dsonar.exclusions=${{inputs.exclusions}}
+            -Dsonar.log.level=WARN

@@ -1,0 +1,86 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      build_artifact_folder:
+        required: true
+        type: string
+      build_artifact_name:
+        required: true
+        type: string
+      package_manager:
+        required: false
+        type: string
+        default: 'yarn'
+      env_file_name:
+        required: false
+        type: string
+        default: '.env'
+      env_file_path:
+        required: false
+        type: string
+        default: 'dist'
+      env_file_data:
+        required: false
+        type: string
+        default: ''
+      env_file_data_format:
+        required: false
+        type: string
+        default: 'dotenv'
+      env_file_format:
+        required: false
+        type: string
+        default: 'dotenv'
+      build_cache_key:
+        required: true
+        type: string
+      node_version:
+        required: true
+        type: string
+
+    outputs:
+      build_artifact_folder:
+        value: ${{ inputs.build_artifact_folder }}
+      build_artifact_name:
+        value: ${{ inputs.build_artifact_name }}
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      CLI_PACKR: yarn packr
+    steps:
+      - name: Retrieve build cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./*
+          key: ${{ inputs.build_cache_key }}
+          fail-on-cache-miss: true
+
+      - name: Setup Node ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+      - name: Create runtime env
+        if: inputs.env_file_data != ''
+        uses: flexbase-eng/actions/create-env@main
+        with:
+          file_name: ${{ inputs.env_file_name }}
+          file_path: ${{ inputs.env_file_path }}
+          file_data: ${{ inputs.env_file_data }}
+          file_data_format: ${{ inputs.env_file_data_format }}
+          file_format: ${{ inputs.env_file_format }}
+
+      - name: Packr
+        run: ${{ env.CLI_PACKR }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.build_artifact_name }}
+          path: ${{ inputs.build_artifact_folder }}
+          retention-days: 1
+          if-no-files-found: error

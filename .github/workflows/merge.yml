@@ -1,0 +1,26 @@
+name: Merge
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  dev:
+    uses: ./.github/workflows/build.test.package.deploy.yml
+    secrets: inherit
+    with:
+      node_version: '20'
+      build_cache_key: build-cache-${{ github.sha }}
+      is_beta: true
+      node_env: 'development'
+
+  prod:
+    needs: [dev]
+    uses: ./.github/workflows/build.test.package.deploy.yml
+    secrets: inherit
+    with:
+      node_version: '20'
+      build_cache_key: build-cache-${{ github.sha }}
+      is_beta: false
+      node_env: 'production'
