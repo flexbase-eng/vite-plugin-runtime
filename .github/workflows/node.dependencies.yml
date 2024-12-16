@@ -36,7 +36,7 @@ jobs:
       - name: Compute cache key
         id: compute-cache-key
         env:
-          CACHE_KEY: node-modules-${{ runner.os }}-${{ inputs.node_env }}-${{ hashFiles(env.LOCK_FILE) }}
+          CACHE_KEY: node-modules-${{ runner.os }}-${{ hashFiles(env.LOCK_FILE) }}
         run: |
           echo "cache_key=$CACHE_KEY" >> $GITHUB_OUTPUT
           echo "CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
