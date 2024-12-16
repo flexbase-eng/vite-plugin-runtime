@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-runtime",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Vite plugin that enables configuring runtime environment variables when building",
   "author": {
     "name": "Flexbase Technologies",
@@ -33,6 +33,7 @@
   "type": "module",
   "private": false,
   "scripts": {
+    "changeset": "changeset && changeset version",
     "lint": "eslint src/** --max-warnings=0",
     "lint:fix": "yarn lint --fix",
     "dev": "vite",
@@ -56,12 +57,9 @@
     "vite": "*"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@changesets/cli": "^2.27.10",
     "@flexbase/packr": "latest",
     "@rollup/plugin-typescript": "^11.1.5",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
     "@types/node": "^20.14.10",
     "@typescript-eslint/eslint-plugin": "7.15.0",
     "@typescript-eslint/parser": "7.15.0",
@@ -77,7 +75,6 @@
     "is-ci": "^3.0.1",
     "lint-staged": "15.2.7",
     "moq.ts": "^10.0.8",
-    "semantic-release": "^24.0.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.15.0",
     "vite": "5.3.6",
@@ -91,50 +88,6 @@
     "tabWidth": 2,
     "useTabs": false,
     "printWidth": 150
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "release": {
-    "branches": [
-      "main",
-      {
-        "name": "*",
-        "prerelease": true
-      }
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "angular",
-          "releaseRules": [
-            {
-              "breaking": true,
-              "release": "major"
-            },
-            {
-              "message": "major*",
-              "release": "major"
-            },
-            {
-              "message": "feat*",
-              "release": "minor"
-            },
-            {
-              "message": "*",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/npm",
-      "@semantic-release/git",
-      "@semantic-release/github"
-    ]
   },
   "packr": {
     "output": "output",
