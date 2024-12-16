@@ -59,7 +59,7 @@ jobs:
       - name: Install dependencies
         if: steps.dependencies-cache.outputs.cache-hit != 'true'
         env:
-          NODE_ENV: ${{ inputs.node_env }}
+          NODE_ENV: development
         run: ${{ env.CLI_INSTALL }}
 
       - name: Update dependencies cache
